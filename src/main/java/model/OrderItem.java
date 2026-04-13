@@ -8,12 +8,14 @@ import java.sql.Timestamp;
 @Getter
 @NoArgsConstructor
 public class OrderItem extends BaseEntity{
+    private String order_item_id;
     private String menuItemId;
     private int quantity;
     private double price;
 
-public OrderItem(String id, Timestamp createdAt, String menuItemId, int quantity, double price){
+public OrderItem(String id, Timestamp createdAt,String order_item_id, String menuItemId, int quantity, double price){
     super(id, createdAt);
+    this.order_item_id = order_item_id;
     this.menuItemId = menuItemId;
     this.quantity = quantity;
     this.price = price;
