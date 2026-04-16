@@ -1,11 +1,10 @@
 package model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
-@NoArgsConstructor
+
 @Getter
 public class MenuItem extends BaseEntity {
     private String name;

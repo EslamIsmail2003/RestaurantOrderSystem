@@ -46,14 +46,27 @@ public class Utils {
         return email != null && email.contains(".") && email.contains("@");
     }
 
-    public static String getValidatedInputs(String prompt, String warningMessage) {
-        System.out.println(prompt);
-        String input = Utils.getStringInput();
-        if (!Utils.isValidString(input)) {
-            logger.warn("{}: {}", warningMessage, input);
-            System.out.println("Invalid format! ");
-            return null;
+    public static String getValidInputs(String prompt, String warningMessage) {
+        while (true) {
+            System.out.println(prompt);
+            String input = Utils.getStringInput();
+            if (Utils.isValidString(input)) {
+                return input;
+            }
+            logger.warn("{} {}", warningMessage, input);
+            System.out.println("Invalid format! please try again: ");
         }
-        return input;
+    }
+
+    public static String getValidatedEmail(String prompt){
+        while (true){
+            System.out.println(prompt);
+            String input = Utils.getStringInput();
+            if (Utils.isValidEmail(input)){
+                return input;
+            }
+            logger.warn("Invalid email format! {}", input);
+            System.out.println("Invalid email format! please try again: ");
+        }
     }
 }

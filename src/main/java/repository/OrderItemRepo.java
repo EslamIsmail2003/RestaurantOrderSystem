@@ -20,8 +20,8 @@ public class OrderItemRepo {
         try {
             Connection connection = DatabaseConnection.getConnection();
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setString(1, orderItem.getOrder_item_id());
-            stmt.setString(2, orderItem.getId());
+            stmt.setString(1, orderItem.getId());
+            stmt.setString(2, orderItem.getOrderId());
             stmt.setString(3, orderItem.getMenuItemId());
             stmt.setInt(4, orderItem.getQuantity());
             stmt.setDouble(5, orderItem.getPrice());
@@ -34,36 +34,36 @@ public class OrderItemRepo {
         }
     }
 
-    public List<OrderItem> getAllOrderItems(){
-        List<OrderItem> orderItems= new ArrayList<>();
+    public List<OrderItem> getAllOrderItems() {
+        List<OrderItem> orderItems = new ArrayList<>();
         String sql = "SELECT * FROM order_items";
         try {
             Connection connection = DatabaseConnection.getConnection();
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet resultSet = stmt.executeQuery();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 orderItems.add(mapRow(resultSet));
             }
         } catch (SQLException e) {
-            logger.error("An error has occurred while fetching data from order items! " , e);
+            logger.error("An error has occurred while fetching data from order items! ", e);
             return new ArrayList<>();
         }
         return orderItems;
     }
 
-    public List<OrderItem> getOrderByOrderId(String order_id){
+    public List<OrderItem> getOrderByOrderId(String OrderId) {
         List<OrderItem> orderItems = new ArrayList<>();
         String sql = "SELECT * FROM order_items WHERE order_id = ?";
         try {
             Connection connection = DatabaseConnection.getConnection();
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setString(1,order_id);
+            stmt.setString(1, OrderId);
             ResultSet resultSet = stmt.executeQuery();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 orderItems.add(mapRow(resultSet));
             }
         } catch (SQLException e) {
-            logger.error("An error has occurred while fetching data from order items! " , e);
+            logger.error("An error has occurred while fetching data from order items! ", e);
             return new ArrayList<>();
         }
         return orderItems;

@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
-@NoArgsConstructor
 @Getter
 public class Staff  extends  BaseEntity{
     private String firstName;

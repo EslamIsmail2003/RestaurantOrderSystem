@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
-@NoArgsConstructor
+
 @Getter
 public class Order extends BaseEntity {
     private String customerId;
