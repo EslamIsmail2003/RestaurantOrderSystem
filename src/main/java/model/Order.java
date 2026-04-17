@@ -2,11 +2,13 @@ package model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.sql.Timestamp;
 
 
 @Getter
+@Setter
 public class Order extends BaseEntity {
     private String customerId;
     private String status;

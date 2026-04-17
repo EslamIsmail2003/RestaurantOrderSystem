@@ -1,5 +1,6 @@
 import service.CustomerService;
 import service.MenuService;
+import service.OrderService;
 import utils.DatabaseConnection;
 
 public class Main {
@@ -7,8 +8,8 @@ public class Main {
         MenuService menuService = new MenuService();
         CustomerService customerService = new CustomerService();
         DatabaseConnection.getConnection();
-        menuService.getAllMenuItems();
-        menuService.getMenuItemByCategory();
+        OrderService orderService = new OrderService();
+        orderService.placeOrder();
 
 
     }
