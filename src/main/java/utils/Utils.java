@@ -58,15 +58,30 @@ public class Utils {
         }
     }
 
-    public static String getValidatedEmail(String prompt){
-        while (true){
+    public static double getDoubleInputs(String prompt, String warningMessage) {
+        while (true) {
             System.out.println(prompt);
             String input = Utils.getStringInput();
-            if (Utils.isValidEmail(input)){
+            try {
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println(warningMessage);
+            }
+        }
+    }
+
+
+    public static String getValidatedEmail(String prompt) {
+        while (true) {
+            System.out.println(prompt);
+            String input = Utils.getStringInput();
+            if (Utils.isValidEmail(input)) {
                 return input;
             }
             logger.warn("Invalid email format! {}", input);
             System.out.println("Invalid email format! please try again: ");
         }
     }
+
+
 }

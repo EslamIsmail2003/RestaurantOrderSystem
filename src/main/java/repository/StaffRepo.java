@@ -51,6 +51,24 @@ public class StaffRepo {
         return staffList;
     }
 
+    public List<Staff> getStaffByEmail(String email){
+        List<Staff> staffList = new ArrayList<>();
+        String sql = "SELECT * FROM staff WHERE email = ? ";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1,email);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()){
+                staffList.add(rowMap(resultSet));
+            }
+        } catch (SQLException e) {
+            logger.error("An error has occurred while fetching data from staff! ", e);
+            return new ArrayList<>();
+        }
+        return staffList;
+    }
+
     public List<Staff> getStaffByRole(String role) {
         List<Staff> staffList = new ArrayList<>();
         String sql = "SELECT * FROM staff WHERE role = ?";
