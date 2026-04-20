@@ -10,8 +10,8 @@ CREATE TABLE customers(
 
 CREATE TABLE menu_items(
     item_id VARCHAR(36) PRIMARY KEY,
-    name VARCHAR(50),
-    category VARCHAR(50),
+    name VARCHAR(255),
+    category VARCHAR(255),
     price DECIMAL,
     created_at TIMESTAMP
 );

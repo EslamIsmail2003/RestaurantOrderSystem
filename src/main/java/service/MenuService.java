@@ -42,6 +42,13 @@ public class MenuService {
             menuItem.displayMenuItem();
         }
     }
+    public void displayCategories(){
+        List<String> categories = menuItemRepo.getAllCategories();
+        for (int i = 0; i < categories.size() ; i++ ){
+            System.out.println((i+1) + ". " + categories.get(i));
+        }
+    }
+
 
     private static MenuItem addMenuItem(String name, String category, double price) {
         String newUUID = UUID.randomUUID().toString();
@@ -49,3 +56,4 @@ public class MenuService {
         return new MenuItem(newUUID, createdAt, name, category, price);
     }
 }
+

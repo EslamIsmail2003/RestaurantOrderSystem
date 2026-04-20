@@ -16,6 +16,7 @@ public class Order extends BaseEntity {
 
 public Order(String id, Timestamp createdAt,String customerId, String status, double totalAmount){
     super(id, createdAt);
+    this.customerId = customerId;
     this.status = status;
     this.totalAmount = totalAmount;
 }

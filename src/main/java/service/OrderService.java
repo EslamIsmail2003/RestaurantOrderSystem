@@ -26,79 +26,75 @@ public class OrderService {
     private static final OrderRepo orderRepo = new OrderRepo();
     private static final OrderItemRepo orderItemRepo = new OrderItemRepo();
 
-    public void placeOrder() {
+    public void orderProcess() {
         String email = Utils.getValidatedEmail("Enter your email: ");
         List<Customer> customers = customerRepo.getCustomerByEmail(email);
-
         if (customers.isEmpty()) {
-            logger.warn("No customer registered with email: {}", email);
-            System.out.println("Sorry, this email is not registered.");
-            System.out.println("Would you like to register? (Yes/No)");
+            logger.warn("This email is not registered! {}", email);
+            System.out.println("Sorry, this email is not registered! ");
+            System.out.println("Would you like to register ? (Yes/No)");
             String attempt = Utils.getStringInput();
             if (attempt.equalsIgnoreCase("Yes")) {
                 customerService.registerCustomer();
             } else {
-                System.out.println("Thanks for using our restaurant!");
+                System.out.println("Thanks for using our restaurant! ");
                 System.exit(0);
             }
             return;
         }
         Customer customer = customers.get(0);
-        String newOrderUUID = UUID.randomUUID().toString();
+        String newOrderId = UUID.randomUUID().toString();
         Timestamp createdAt = new Timestamp(System.currentTimeMillis());
         double totalAmount = 0;
-        Order order = new Order(newOrderUUID, createdAt, customer.getId(), "Pending", totalAmount);
+        String status = "Pending";
+        Order order = new Order(newOrderId,createdAt,customer.getId(),status,totalAmount);
         List<OrderItem> orderItems = new ArrayList<>();
         while (true) {
-            System.out.println("\n--- Menu ---");
-            menuService.getAllMenuItems();
-            System.out.println("Enter item name to add (or type 'done' to confirm order): ");
-            String input = Utils.getStringInput();
-            if (input.equalsIgnoreCase("done")) {
-                break;
-            }
-            System.out.println("How many would you like? ");
-            int quantity = Utils.getNumberInput();
-            List<MenuItem> menuItems = menuItemRepo.getAllMenuItems();
-            MenuItem selectedItem = null;
-            for (MenuItem item : menuItems) {
-                if (item.getName().equalsIgnoreCase(input)) {
-                    selectedItem = item;
-                    break;
-                }
-            }
-            if (selectedItem == null) {
-                System.out.println("No item with that name was found, please try again.");
-                logger.warn("Menu item not found: {}", input);
+            System.out.println("\n -------- Categories --------");
+            menuService.displayCategories();
+
+            System.out.println("Enter category number(or 0 to checkout)");
+            int categoryChoice = Utils.getNumberInput();
+            if (categoryChoice == 0) break;
+            List<String> categories = menuItemRepo.getAllCategories();
+            if (categoryChoice < 1 || categoryChoice > categories.size()) {
+                System.out.println("Invalid choice! Please try again: ");
                 continue;
             }
-            double lineTotal = selectedItem.getPrice() * quantity;
-            totalAmount += lineTotal;
-
-            String orderItemUUID = UUID.randomUUID().toString();
-            OrderItem orderItem = new OrderItem(
-                    orderItemUUID,
-                    createdAt,
-                    order.getId(),
-                    selectedItem.getId(),
-                    quantity,
-                    selectedItem.getPrice()
-            );
+            String selectedCategories = categories.get(categoryChoice - 1);
+            System.out.println("\n --- " + selectedCategories + " ---");
+            List<MenuItem> items = menuItemRepo.getMenuItemByCategory(selectedCategories);
+            for (int i = 0; i < items.size(); i++) {
+                System.out.println((i + 1) + ". " + items.get(i).getName() + " -$ " + items.get(i).getPrice());
+            }
+            System.out.println("Enter item number to select \n or 0 to go back:");
+            int choice = Utils.getNumberInput();
+            if (choice == 0) continue;
+            if (choice < 1 || choice > items.size()) {
+                System.out.println("Invalid choice! Please try again: ");
+                continue;
+            }
+            MenuItem selectedItem = items.get(choice - 1);
+            System.out.println("How many of " + selectedItem.getName() + " do you want: ");
+            int quantity = Utils.getNumberInput();
+            double total = selectedItem.getPrice() * quantity;
+            totalAmount += total;
+            String orderNewUUID = UUID.randomUUID().toString();
+            OrderItem orderItem = new OrderItem(orderNewUUID, createdAt, order.getId(), selectedItem.getId(), quantity, selectedItem.getPrice());
             orderItems.add(orderItem);
+            System.out.println("Added " + quantity + " " + selectedItem.getName() + " " + total);
+        }
+            if (orderItems.isEmpty()){
+                System.out.println("No orders were added! order cancelled. ");
+            }
+            order.setTotalAmount(totalAmount);
+            orderRepo.insertOrder(order);
+            for (OrderItem item : orderItems){
+                orderItemRepo.insertOrderItem(item);
+            }
+            System.out.println("Order placed successfully! Total: " + totalAmount + " -$");
+            logger.info("Order {} placed for customer {}", order.getId(), customer.getId());
 
-            System.out.printf("Added %dx %s ($%.2f)%n", quantity, selectedItem.getName(), lineTotal);
-        }
-        if (orderItems.isEmpty()) {
-            System.out.println("No items were added. Order cancelled.");
-            return;
-        }
-        order.setTotalAmount(totalAmount);
-        orderRepo.insertOrder(order);
-        for (OrderItem item : orderItems) {
-            orderItemRepo.insertOrderItem(item);
-        }
-        System.out.printf("%nOrder placed successfully! Total: $%.2f%n", totalAmount);
-        logger.info("Order {} placed for customer {}", order.getId(), customer.getId());
     }
 }
 

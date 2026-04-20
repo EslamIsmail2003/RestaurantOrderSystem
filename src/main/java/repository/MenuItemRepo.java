@@ -33,6 +33,22 @@ public class MenuItemRepo {
         }
     }
 
+    public List<String> getAllCategories(){
+        List<String> categories = new ArrayList<>();
+        String sql = "SELECT DISTINCT category FROM menu_items ORDER BY category";
+        try{
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()){
+               categories.add(resultSet.getString("category"));
+            }
+        } catch (SQLException e) {
+            logger.error("An error has occurred while fetching data from menu items", e);
+            return new ArrayList<>();
+        }
+        return categories;
+    }
     public List<MenuItem> getAllMenuItems() {
         List<MenuItem> menuItems = new ArrayList<>();
         String sql = "SELECT * FROM menu_items";
@@ -52,7 +68,7 @@ public class MenuItemRepo {
 
     public List<MenuItem> getMenuItemByCategory(String category) {
         List<MenuItem> menuItems = new ArrayList<>();
-        String sql = "SELECT * FROM menu_items WHERE category = ? ";
+        String sql = "SELECT * FROM menu_items WHERE category = ? LIMIT 20 ";
         try {
             Connection connection = DatabaseConnection.getConnection();
             PreparedStatement stmt = connection.prepareStatement(sql);
