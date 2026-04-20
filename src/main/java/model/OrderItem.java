@@ -19,4 +19,8 @@ public class OrderItem extends BaseEntity {
         this.quantity = quantity;
         this.price = price;
     }
+
+    public void displayOrderItem(){
+        System.out.println("Order Id: " + getId() + " Item Name: ");
+    }
 }

@@ -1,14 +1,12 @@
 import service.ChoiceHandler;
-import service.CustomerService;
 import service.MenuService;
-import service.OrderService;
-import utils.DataSeeder;
 import utils.DatabaseConnection;
 
 public class Main {
     public static void main(String[] args){
         DatabaseConnection.getConnection();
-        processMainMenu();
+        MenuService menuService = new MenuService();
+        menuService.revenueByCategory();
     }
 
 

@@ -53,13 +53,13 @@ public class ChoiceHandler {
         while (true) {
             printCustomerMenu();
             int choice = Utils.getNumberInput();
-            if (choice == 3) return;
+            if (choice == 4) return;
             Runnable actions = customerMenuActions.get(choice);
             if (actions != null) {
                 actions.run();
             } else {
                 logger.error("Invalid input! {}", choice);
-                System.out.println("Invalid input! Please enter a number between 1 and 3");
+                System.out.println("Invalid input! Please enter a number between 1 and 4");
             }
         }
     }
@@ -100,7 +100,8 @@ public class ChoiceHandler {
     public void initCustomerMenu(CustomerService customerService) {
         customerMenuActions.put(1, customerService::registerCustomer);
         customerMenuActions.put(2, customerService::orderProcess);
-        customerMenuActions.put(3, () -> System.out.println("Going back..."));
+        customerMenuActions.put(3, customerService::getOrderByEmail);
+        customerMenuActions.put(4, () -> System.out.println("Going back..."));
     }
 
     public void initAdminMenu(MenuService menuService) {
@@ -122,7 +123,8 @@ public class ChoiceHandler {
     public void printCustomerMenu() {
         System.out.println("1. Register");
         System.out.println("2. Place an order");
-        System.out.println("3. Back");
+        System.out.println("3. Display order by email");
+        System.out.println("4. Back");
     }
 
     public void printAdminMenu() {

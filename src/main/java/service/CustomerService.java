@@ -36,7 +36,26 @@ public class CustomerService {
         customerRepo.insertCustomer(newCustomer);
     }
 
-
+    public void getOrderByEmail(){
+        String email = Utils.getValidatedEmail("Enter your email: ");
+        List<Order> orders = orderRepo.getOrderByEmail(email);
+        if (orders.isEmpty()){
+            logger.warn("This email has no active orders.{}", email);
+            System.out.println("You didn't place any orders yet! ");
+            System.out.println("Would you like to place an order? (Yes/No)");
+            String input = Utils.getStringInput();
+            if (input.equalsIgnoreCase("Yes")){
+                orderProcess();
+            }else {
+                System.out.println("Thanks for using the restaurant app! ");
+                System.exit(0);
+            }
+            return;
+        }
+        for (Order order : orders){
+            order.displayOrder();
+        }
+    }
     private String getUniqueEmail() {
         String email = Utils.getValidatedEmail("Enter your email: ");
         while (true) {

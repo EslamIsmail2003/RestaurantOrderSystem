@@ -2,19 +2,24 @@ package service;
 
 
 import model.MenuItem;
+import model.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import repository.MenuItemRepo;
+import repository.OrderItemRepo;
+import repository.OrderRepo;
 import utils.Utils;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class MenuService {
     private static final Logger logger = LoggerFactory.getLogger(MenuService.class);
     private static final MenuItemRepo menuItemRepo = new MenuItemRepo();
-
+    private static final OrderRepo orderRepo = new OrderRepo();
 
     public void addNewMenuItem() {
         String itemName = Utils.getValidInputs("Enter the item name: ", " Invalid item name format! ");
@@ -49,6 +54,35 @@ public class MenuService {
         }
     }
 
+    public void getOrderByStatus(){
+        System.out.println("Enter the status of the order: ");
+        String status = Utils.getStringInput();
+        status = status.substring(0,1).toUpperCase() + status.substring(1).toLowerCase();
+        List<Order> orders = orderRepo.getOrderByStatus(status);
+        if (orders.isEmpty()){
+            logger.warn("There are no orders with this status! {}",status);
+            System.out.println("There are no orders with this status! ");
+        }
+        for (Order order : orders){
+            order.displayOrder();
+        }
+    }
+
+    public void revenueByCategory(){
+        HashMap<String, Double> itemMap = menuItemRepo.getTotalRevenueByCategory();
+       for (Map.Entry<String,Double> entry: itemMap.entrySet()){
+        String category = entry.getKey();
+        double total_revenue = entry.getValue();
+           System.out.printf("%-20s $%.2f%n", category, total_revenue);
+       }
+    }
+
+    public void displayAllOrders(){
+        List<Order> orders = orderRepo.getAllOrders();
+        for (Order order : orders){
+            order.displayOrder();
+        }
+    }
 
     private static MenuItem addMenuItem(String name, String category, double price) {
         String newUUID = UUID.randomUUID().toString();

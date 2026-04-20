@@ -1,5 +1,6 @@
 package repository;
 
+import model.Customer;
 import model.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,7 @@ public class OrderRepo {
 
     public List<Order> getOrderByStatus(String status) {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT * FROM orders WHERE status = ?";
+        String sql = "SELECT * FROM orders WHERE status =?";
         try {
             Connection connection = DatabaseConnection.getConnection();
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -64,6 +65,23 @@ public class OrderRepo {
         } catch (SQLException e) {
             logger.error("An error has occurred while fetching data from orders! ", e);
             return new ArrayList<>();
+        }
+        return orders;
+    }
+
+    public List<Order> getOrderByEmail(String email){
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT o.order_id, o.customer_id, o.status, o.total_amount, o.created_at FROM orders O JOIN customers C ON o.customer_id = c.customer_id WHERE c.email = ?";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1,email);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()){
+                orders.add(mapRow(resultSet));
+            }
+        } catch (SQLException e) {
+            logger.error("An error has occurred while fetching data from customers! ",e);
         }
         return orders;
     }
@@ -85,6 +103,8 @@ public class OrderRepo {
         }
         return orders;
     }
+
+
 
     private Order mapRow(ResultSet resultSet)
             throws SQLException {

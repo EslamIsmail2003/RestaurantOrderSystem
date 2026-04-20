@@ -1,6 +1,7 @@
 package repository;
 
 import model.MenuItem;
+import model.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.DatabaseConnection;
@@ -10,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MenuItemRepo {
@@ -83,6 +85,26 @@ public class MenuItemRepo {
         }
         return menuItems;
     }
+
+    public HashMap<String, Double> getTotalRevenueByCategory(){
+        HashMap<String, Double> orderMap = new HashMap<>();
+        String sql = "SELECT mi.category, SUM(oi.quantity * oi.price)AS total_revenue FROM menu_items MI JOIN order_items OI ON mi.item_id = oi.menu_item_id GROUP BY mi.category ORDER BY total_revenue DESC";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()){
+                String category = resultSet.getString("category");
+                double revenue = resultSet.getDouble("total_revenue");
+                orderMap.put(category,revenue);
+            }
+        } catch (SQLException e) {
+            logger.error("An error has occurred while fetching data from menu items! ", e);
+            return new HashMap<>();
+        }
+        return orderMap;
+    }
+
 
     private MenuItem rowMap(ResultSet resultSet)
             throws SQLException {

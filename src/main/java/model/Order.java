@@ -21,6 +21,6 @@ public Order(String id, Timestamp createdAt,String customerId, String status, do
     this.totalAmount = totalAmount;
 }
 public void displayOrder(){
-    System.out.println("Order Id: " + getId() + " Customer Id: " + getCustomerId() + " Total Amount: " + getTotalAmount() + " Created At: " + getCreatedAt());
+    System.out.println("Order Id: " + getId() + " Customer Id: " + getCustomerId() +" Status: " + status + " Total Amount: " + getTotalAmount() + " Created At: " + getCreatedAt());
 }
 }

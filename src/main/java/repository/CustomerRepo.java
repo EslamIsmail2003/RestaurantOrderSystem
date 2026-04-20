@@ -34,6 +34,8 @@ public class CustomerRepo {
         }
     }
 
+
+
     public List<Customer> getCustomerByEmail(String email) {
         List<Customer> customers = new ArrayList<>();
         String sql = "SELECT * FROM customers WHERE email = ?";
@@ -47,6 +49,7 @@ public class CustomerRepo {
             }
         } catch (SQLException e) {
             logger.error("An error occurred while fetching data from customers! ", e);
+            return new ArrayList<>();
         }
         return customers;
     }
