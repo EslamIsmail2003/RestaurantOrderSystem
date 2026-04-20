@@ -139,6 +139,45 @@ public class CustomerService {
         logger.info("Order {} placed for customer {}", order.getId(), customer.getId());
 
     }
+    public void cancelOrder(){
+        String email = Utils.getValidatedEmail("Enter your email: ");
+        List<Customer> customers = customerRepo.getCustomerByEmail(email);
+        if (customers.isEmpty()){
+            logger.error("No customers were found with this email! {}", email);
+            System.out.println("This email is not registered! ");
+            return;
+        }
+        System.out.println("\n --- Available orders --- ");
+        List<Order> orders = orderRepo.getOrderByEmail(email);
+        if (orders.isEmpty()){
+            logger.warn("No orders were found for this email! ");
+            System.out.println("No orders were found for this email! ");
+            return;
+        }
+        for (Order order : orders){
+            order.displayOrder();
+        }
+        System.out.println("Please enter order id to cancel: ");
+        String orderId = Utils.getStringInput();
+        Order selectedOrder = orders.stream().filter(o -> o.getId().equals(orderId)).findFirst().orElse(null);
+        if (selectedOrder==null){
+            System.out.println("Order was not found");
+            return;
+        }
+        if (!selectedOrder.getStatus().equals("Pending")){
+            System.out.println("Only pending orders can be cancelled! ");
+        }
+        System.out.println("Are you sure you want to cancel this order? (Yes/No): ");
+        String input = Utils.getStringInput();
+        if (input.equalsIgnoreCase("Yes")){
+            System.out.println("Completed! your order has been cancelled! ");
+            orderRepo.deleteOrder(orderId,email);
+        }else {
+            System.out.println("Cancellation aborted! ");
+        }
+    }
+
+
 
 
     private static Customer addCustomer(String firstName, String lastName, String phone, String email, String city) {

@@ -34,6 +34,22 @@ public class OrderRepo {
         }
     }
 
+    public void deleteOrder(String orderId, String email) {
+        String sql = "UPDATE orders SET status = 'Cancelled' WHERE order_id =? ";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+                stmt.setString(1, orderId);
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected == 0) {
+                    logger.debug("Attempting to cancel order with id: '{}'", orderId);
+                    System.out.println("No matching order found (wrong email or order id).");
+                }
+        } catch (SQLException e) {
+            logger.error("Error cancelling order!", e);
+        }
+    }
+
     public List<Order> getAllOrders() {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders";
@@ -69,19 +85,36 @@ public class OrderRepo {
         return orders;
     }
 
-    public List<Order> getOrderByEmail(String email){
+    public void updateOrderByStatus(String orderId, String status) {
+        String sql = "UPDATE orders SET status = ? WHERE order_id =? ";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, status);
+            stmt.setString(2, orderId);
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated == 0) {
+                logger.warn("Error while updating orders {}", orderId);
+            }
+        } catch (SQLException e) {
+            logger.error("An error has occurred while updating order status! ", e);
+        }
+    }
+
+
+    public List<Order> getOrderByEmail(String email) {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT o.order_id, o.customer_id, o.status, o.total_amount, o.created_at FROM orders O JOIN customers C ON o.customer_id = c.customer_id WHERE c.email = ?";
         try {
             Connection connection = DatabaseConnection.getConnection();
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setString(1,email);
+            stmt.setString(1, email);
             ResultSet resultSet = stmt.executeQuery();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 orders.add(mapRow(resultSet));
             }
         } catch (SQLException e) {
-            logger.error("An error has occurred while fetching data from customers! ",e);
+            logger.error("An error has occurred while fetching data from customers! ", e);
         }
         return orders;
     }
@@ -104,19 +137,19 @@ public class OrderRepo {
         return orders;
     }
 
-    public List<Order> getOrderByOrderId(String orderId){
+    public List<Order> getOrderByOrderId(String orderId) {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE order_id = ? ";
         try {
             Connection connection = DatabaseConnection.getConnection();
             PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setString(1,orderId);
+            stmt.setString(1, orderId);
             ResultSet resultSet = stmt.executeQuery();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 orders.add(mapRow(resultSet));
             }
         } catch (SQLException e) {
-            logger.error("An error has occurred while fetching data from orders! ",e );
+            logger.error("An error has occurred while fetching data from orders! ", e);
             return new ArrayList<>();
         }
         return orders;

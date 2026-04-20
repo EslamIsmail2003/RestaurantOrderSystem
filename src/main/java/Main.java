@@ -1,14 +1,11 @@
 import service.ChoiceHandler;
-import service.MenuService;
 import utils.DatabaseConnection;
 
 public class Main {
     public static void main(String[] args){
         DatabaseConnection.getConnection();
-        MenuService menuService = new MenuService();
-        menuService.updateOrderStatus();
+        processMainMenu();
     }
-
 
     public static void printOptions(){
         System.out.println("Welcome to the restaurant system! ");
@@ -21,6 +18,5 @@ public class Main {
             while (true){
                 choiceHandler.runMainMenu();
             }
-
     }
 }

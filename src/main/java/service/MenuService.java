@@ -68,6 +68,20 @@ public class MenuService {
         }
     }
 
+    public void getOrderByCustomerId(){
+        System.out.println("Enter the customer's ID: ");
+        String customerId = Utils.getStringInput();
+        List<Order> orders = orderRepo.getOrderByCustomerId(customerId);
+        if (orders.isEmpty()){
+            logger.warn("No orders were found! {}", customerId);
+            System.out.println("There are no orders for this customer id! ");
+            return;
+        }
+        for (Order order : orders){
+            order.displayOrder();
+        }
+    }
+
     public void revenueByCategory() {
         HashMap<String, Double> itemMap = menuItemRepo.getTotalRevenueByCategory();
         for (Map.Entry<String, Double> entry : itemMap.entrySet()) {
@@ -105,9 +119,7 @@ public class MenuService {
         }
         System.out.println("Set the order status: ");
         String status = Utils.getStringInput();
-        for (Order order : orders){
-            order.setStatus(status.substring(0,1).toUpperCase() + status.substring(1).toLowerCase());
-        }
+        orderRepo.updateOrderByStatus(orderId,status);
         System.out.println("Order status has updated successfully! ");
     }
 
