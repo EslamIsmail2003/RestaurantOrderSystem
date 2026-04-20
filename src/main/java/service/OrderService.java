@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+
 public class OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
     private static final CustomerRepo customerRepo = new CustomerRepo();
@@ -47,7 +48,7 @@ public class OrderService {
         Timestamp createdAt = new Timestamp(System.currentTimeMillis());
         double totalAmount = 0;
         String status = "Pending";
-        Order order = new Order(newOrderId,createdAt,customer.getId(),status,totalAmount);
+        Order order = new Order(newOrderId, createdAt, customer.getId(), status, totalAmount);
         List<OrderItem> orderItems = new ArrayList<>();
         while (true) {
             System.out.println("\n -------- Categories --------");
@@ -84,16 +85,16 @@ public class OrderService {
             orderItems.add(orderItem);
             System.out.println("Added " + quantity + " " + selectedItem.getName() + " " + total);
         }
-            if (orderItems.isEmpty()){
-                System.out.println("No orders were added! order cancelled. ");
-            }
-            order.setTotalAmount(totalAmount);
-            orderRepo.insertOrder(order);
-            for (OrderItem item : orderItems){
-                orderItemRepo.insertOrderItem(item);
-            }
-            System.out.println("Order placed successfully! Total: " + totalAmount + " -$");
-            logger.info("Order {} placed for customer {}", order.getId(), customer.getId());
+        if (orderItems.isEmpty()) {
+            System.out.println("No orders were added! order cancelled. ");
+        }
+        order.setTotalAmount(totalAmount);
+        orderRepo.insertOrder(order);
+        for (OrderItem item : orderItems) {
+            orderItemRepo.insertOrderItem(item);
+        }
+        System.out.println("Order placed successfully! Total: " + totalAmount + " -$");
+        logger.info("Order {} placed for customer {}", order.getId(), customer.getId());
 
     }
 }
