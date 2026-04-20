@@ -34,10 +34,6 @@ public class CustomerRepo {
         }
     }
 
-
-
-
-
     public List<Customer> getCustomerByEmail(String email) {
         List<Customer> customers = new ArrayList<>();
         String sql = "SELECT * FROM customers WHERE email = ?";

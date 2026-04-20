@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class OrderRepo {
@@ -49,6 +51,43 @@ public class OrderRepo {
             logger.error("Error cancelling order!", e);
         }
     }
+
+    public HashMap<String, Integer> getOrderCountByStatus(){
+        HashMap<String, Integer> mapList = new LinkedHashMap<>();
+        String sql = "SELECT COUNT(*) AS total_orders, status FROM orders GROUP BY status";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()){
+                String status = resultSet.getString("status");
+                int itemCount = resultSet.getInt("total_orders");
+                mapList.put(status,itemCount);
+            }
+        } catch (SQLException e) {
+           logger.error("An error occurred while fetching total orders! ", e);
+           return new HashMap<>();
+        }
+        return mapList;
+    }
+
+
+
+    public double getTotalRevenue() {
+        String sql = "SELECT SUM(total_amount) AS total_revenue FROM orders WHERE status = 'completed'";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getDouble("total_revenue");
+            }
+        } catch (SQLException e) {
+            logger.error("An error occurred while fetching total revenue!", e);
+        }
+        return 0.0;
+    }
+
 
     public List<Order> getAllOrders() {
         List<Order> orders = new ArrayList<>();

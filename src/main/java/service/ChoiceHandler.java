@@ -52,13 +52,13 @@ public class ChoiceHandler {
         while (true) {
             printAdminMenu();
             int choice = Utils.getNumberInput();
-            if (choice == 9) return;
+            if (choice == 12) return;
             Runnable actions = adminMenuActions.get(choice);
             if (actions != null) {
                 actions.run();
             } else {
                 logger.error("Invalid input! {}", choice);
-                System.out.println("Invalid input! Please enter a number between 1 and 9");
+                System.out.println("Invalid input! Please enter a number between 1 and 12");
             }
         }
     }
@@ -132,7 +132,10 @@ public class ChoiceHandler {
         adminMenuActions.put(6, menuService::revenueByCategory);
         adminMenuActions.put(7, menuService::topSellingItems);
         adminMenuActions.put(8, menuService::getOrderByStatus);
-        adminMenuActions.put(9, () -> System.out.println("Going back..."));
+        adminMenuActions.put(9, menuService::updateOrderStatus);
+        adminMenuActions.put(10,menuService::totalRevenue);
+        adminMenuActions.put(11,menuService::orderCountByStatus);
+        adminMenuActions.put(12, () -> System.out.println("Going back..."));
     }
 
     public void initStaffMenu(StaffService staffService) {
@@ -160,7 +163,10 @@ public class ChoiceHandler {
         System.out.println("6. Display revenue by category");
         System.out.println("7. Display top selling items");
         System.out.println("8. Display order by status");
-        System.out.println("9. Back");
+        System.out.println("9. Update order status");
+        System.out.println("10. Total revenue");
+        System.out.println("11. Order count by status");
+        System.out.println("12. Back");
     }
 
     public void printAdminControl() {
