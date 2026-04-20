@@ -38,13 +38,13 @@ public class ChoiceHandler {
         while (true) {
             printAdminMenu();
             int choice = Utils.getNumberInput();
-            if (choice == 5) return;
+            if (choice == 9) return;
             Runnable actions = adminMenuActions.get(choice);
             if (actions != null) {
                 actions.run();
             } else {
                 logger.error("Invalid input! {}", choice);
-                System.out.println("Invalid input! Please enter a number between 1 and 5");
+                System.out.println("Invalid input! Please enter a number between 1 and 9");
             }
         }
     }
@@ -107,9 +107,13 @@ public class ChoiceHandler {
     public void initAdminMenu(MenuService menuService) {
         adminMenuActions.put(1, menuService::addNewMenuItem);
         adminMenuActions.put(2, menuService::getAllMenuItems);
-        adminMenuActions.put(3, menuService::getMenuItemByCategory);
-        adminMenuActions.put(4, menuService::displayCategories);
-        adminMenuActions.put(5, () -> System.out.println("Going back..."));
+        adminMenuActions.put(3, menuService::displayAllOrders);
+        adminMenuActions.put(4, menuService::getMenuItemByCategory);
+        adminMenuActions.put(5, menuService::displayCategories);
+        adminMenuActions.put(6, menuService::revenueByCategory);
+        adminMenuActions.put(7, menuService::topSellingItems);
+        adminMenuActions.put(8, menuService::getOrderByStatus);
+        adminMenuActions.put(9, () -> System.out.println("Going back..."));
     }
 
     public void initStaffMenu(StaffService staffService) {
@@ -130,9 +134,13 @@ public class ChoiceHandler {
     public void printAdminMenu() {
         System.out.println("1. Add new menu item");
         System.out.println("2. Display all menu items");
-        System.out.println("3. Display menu item by category");
-        System.out.println("4. Display categories");
-        System.out.println("5. Back");
+        System.out.println("3. Display all orders");
+        System.out.println("4. Display menu item by category");
+        System.out.println("5. Display categories");
+        System.out.println("6. Display revenue by category");
+        System.out.println("7. Display top selling items");
+        System.out.println("8. Display order by status");
+        System.out.println("9. Back");
     }
 
     public void printStaffMenu() {

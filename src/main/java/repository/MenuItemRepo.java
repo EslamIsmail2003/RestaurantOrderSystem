@@ -2,6 +2,7 @@ package repository;
 
 import model.MenuItem;
 import model.Order;
+import model.TopSellingItems;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.DatabaseConnection;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class MenuItemRepo {
@@ -87,7 +89,7 @@ public class MenuItemRepo {
     }
 
     public HashMap<String, Double> getTotalRevenueByCategory(){
-        HashMap<String, Double> orderMap = new HashMap<>();
+        HashMap<String, Double> orderMap = new LinkedHashMap<>();
         String sql = "SELECT mi.category, SUM(oi.quantity * oi.price)AS total_revenue FROM menu_items MI JOIN order_items OI ON mi.item_id = oi.menu_item_id GROUP BY mi.category ORDER BY total_revenue DESC";
         try {
             Connection connection = DatabaseConnection.getConnection();
@@ -103,6 +105,25 @@ public class MenuItemRepo {
             return new HashMap<>();
         }
         return orderMap;
+    }
+
+    public HashMap<String, Integer> getTopSellingItems(){
+        HashMap<String, Integer> newList = new LinkedHashMap<>();
+        String sql = "SELECT mi.name, SUM(oi.quantity) AS total_ordered FROM menu_items mi JOIN order_items OI ON mi.item_id = oi.menu_item_id GROUP BY mi.name ORDER BY total_ordered DESC";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()){
+                String name = resultSet.getString("name");
+                int total_ordered = resultSet.getInt("total_ordered");
+                newList.put(name,total_ordered);
+            }
+        } catch (SQLException e) {
+           logger.error("An error has occurred while fetching data from menu items! ", e);
+           return new HashMap<>();
+        }
+        return newList;
     }
 
 

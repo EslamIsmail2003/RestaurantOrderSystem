@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args){
         DatabaseConnection.getConnection();
         MenuService menuService = new MenuService();
-        menuService.revenueByCategory();
+        menuService.updateOrderStatus();
     }
 
 

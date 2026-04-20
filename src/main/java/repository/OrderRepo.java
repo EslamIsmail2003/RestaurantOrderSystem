@@ -104,7 +104,23 @@ public class OrderRepo {
         return orders;
     }
 
-
+    public List<Order> getOrderByOrderId(String orderId){
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT * FROM orders WHERE order_id = ? ";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1,orderId);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()){
+                orders.add(mapRow(resultSet));
+            }
+        } catch (SQLException e) {
+            logger.error("An error has occurred while fetching data from orders! ",e );
+            return new ArrayList<>();
+        }
+        return orders;
+    }
 
     private Order mapRow(ResultSet resultSet)
             throws SQLException {

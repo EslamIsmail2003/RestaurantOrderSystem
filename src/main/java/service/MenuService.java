@@ -6,7 +6,6 @@ import model.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import repository.MenuItemRepo;
-import repository.OrderItemRepo;
 import repository.OrderRepo;
 import utils.Utils;
 
@@ -47,42 +46,71 @@ public class MenuService {
             menuItem.displayMenuItem();
         }
     }
-    public void displayCategories(){
+
+    public void displayCategories() {
         List<String> categories = menuItemRepo.getAllCategories();
-        for (int i = 0; i < categories.size() ; i++ ){
-            System.out.println((i+1) + ". " + categories.get(i));
+        for (int i = 0; i < categories.size(); i++) {
+            System.out.println((i + 1) + ". " + categories.get(i));
         }
     }
 
-    public void getOrderByStatus(){
+    public void getOrderByStatus() {
         System.out.println("Enter the status of the order: ");
         String status = Utils.getStringInput();
-        status = status.substring(0,1).toUpperCase() + status.substring(1).toLowerCase();
+        status = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
         List<Order> orders = orderRepo.getOrderByStatus(status);
-        if (orders.isEmpty()){
-            logger.warn("There are no orders with this status! {}",status);
+        if (orders.isEmpty()) {
+            logger.warn("There are no orders with this status! {}", status);
             System.out.println("There are no orders with this status! ");
         }
-        for (Order order : orders){
+        for (Order order : orders) {
             order.displayOrder();
         }
     }
 
-    public void revenueByCategory(){
+    public void revenueByCategory() {
         HashMap<String, Double> itemMap = menuItemRepo.getTotalRevenueByCategory();
-       for (Map.Entry<String,Double> entry: itemMap.entrySet()){
-        String category = entry.getKey();
-        double total_revenue = entry.getValue();
-           System.out.printf("%-20s $%.2f%n", category, total_revenue);
-       }
+        for (Map.Entry<String, Double> entry : itemMap.entrySet()) {
+            String category = entry.getKey();
+            double total_revenue = entry.getValue();
+            System.out.printf("%-20s $%.2f%n", category, total_revenue);
+        }
     }
 
-    public void displayAllOrders(){
+    public void topSellingItems() {
+        HashMap<String, Integer> itemMap = menuItemRepo.getTopSellingItems();
+        for (Map.Entry<String, Integer> entry : itemMap.entrySet()) {
+            String name = entry.getKey();
+            int total_ordered = entry.getValue();
+            System.out.printf("%-30s %d orders%n", name, total_ordered);
+        }
+    }
+
+
+    public void displayAllOrders() {
         List<Order> orders = orderRepo.getAllOrders();
-        for (Order order : orders){
+        for (Order order : orders) {
             order.displayOrder();
         }
     }
+
+    public void updateOrderStatus(){
+        System.out.println("Enter order id: ");
+        String orderId = Utils.getStringInput();
+        List<Order> orders = orderRepo.getOrderByOrderId(orderId);
+        if (orders.isEmpty()){
+            logger.warn("No active orders were found! {}", orderId);
+            System.out.println("There are no active orders for this id! ");
+            return;
+        }
+        System.out.println("Set the order status: ");
+        String status = Utils.getStringInput();
+        for (Order order : orders){
+            order.setStatus(status.substring(0,1).toUpperCase() + status.substring(1).toLowerCase());
+        }
+        System.out.println("Order status has updated successfully! ");
+    }
+
 
     private static MenuItem addMenuItem(String name, String category, double price) {
         String newUUID = UUID.randomUUID().toString();
