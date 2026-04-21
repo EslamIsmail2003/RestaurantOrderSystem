@@ -33,29 +33,35 @@ public class CustomerService {
         String email = getUniqueEmail();
         String city = Utils.getValidInputs("Enter your city: ", " Invalid city format! ");
         Customer newCustomer = addCustomer(firstName, lastName, phone, email, city);
-        customerRepo.insertCustomer(newCustomer);
+        try {
+            customerRepo.insertCustomer(newCustomer);
+        } catch (RuntimeException e) {
+            logger.error("Failed to insert customer to database{} ", newCustomer);
+        }
+
     }
 
-    public void getOrderByEmail(){
+    public void getOrderByEmail() {
         String email = Utils.getValidatedEmail("Enter your email: ");
         List<Order> orders = orderRepo.getOrderByEmail(email);
-        if (orders.isEmpty()){
+        if (orders.isEmpty()) {
             logger.warn("This email has no active orders.{}", email);
             System.out.println("You didn't place any orders yet! ");
             System.out.println("Would you like to place an order? (Yes/No)");
             String input = Utils.getStringInput();
-            if (input.equalsIgnoreCase("Yes")){
+            if (input.equalsIgnoreCase("Yes")) {
                 orderProcess();
-            }else {
+            } else {
                 System.out.println("Thanks for using the restaurant app! ");
                 System.exit(0);
             }
             return;
         }
-        for (Order order : orders){
+        for (Order order : orders) {
             order.displayOrder();
         }
     }
+
     private String getUniqueEmail() {
         String email = Utils.getValidatedEmail("Enter your email: ");
         while (true) {
@@ -69,6 +75,7 @@ public class CustomerService {
             }
         }
     }
+
     public void orderProcess() {
         String email = Utils.getValidatedEmail("Enter your email: ");
         List<Customer> customers = customerRepo.getCustomerByEmail(email);
@@ -129,55 +136,65 @@ public class CustomerService {
         }
         if (orderItems.isEmpty()) {
             System.out.println("No orders were added! order cancelled. ");
+            return;
         }
-        order.setTotalAmount(totalAmount);
-        orderRepo.insertOrder(order);
-        for (OrderItem item : orderItems) {
-            orderItemRepo.insertOrderItem(item);
+        try {
+            order.setTotalAmount(totalAmount);
+            orderRepo.insertOrder(order);
+            for (OrderItem item : orderItems) {
+                orderItemRepo.insertOrderItem(item);
+                System.out.println("Order placed successfully! Total: " + totalAmount + " -$");
+                logger.info("Order {} placed for customer {}", order.getId(), customer.getId());
+            }
+        } catch (RuntimeException e) {
+            logger.error("Failed to save order for the customer{} ", customer.getId(), e);
+            System.out.println("Something went wrong while placing your order. Please try again.");
         }
-        System.out.println("Order placed successfully! Total: " + totalAmount + " -$");
-        logger.info("Order {} placed for customer {}", order.getId(), customer.getId());
-
     }
-    public void cancelOrder(){
+
+    public void cancelOrder() {
         String email = Utils.getValidatedEmail("Enter your email: ");
         List<Customer> customers = customerRepo.getCustomerByEmail(email);
-        if (customers.isEmpty()){
+        if (customers.isEmpty()) {
             logger.error("No customers were found with this email! {}", email);
             System.out.println("This email is not registered! ");
             return;
         }
         System.out.println("\n --- Available orders --- ");
         List<Order> orders = orderRepo.getOrderByEmail(email);
-        if (orders.isEmpty()){
+        if (orders.isEmpty()) {
             logger.warn("No orders were found for this email! ");
             System.out.println("No orders were found for this email! ");
             return;
         }
-        for (Order order : orders){
+        for (Order order : orders) {
             order.displayOrder();
         }
         System.out.println("Please enter order id to cancel: ");
         String orderId = Utils.getStringInput();
         Order selectedOrder = orders.stream().filter(o -> o.getId().equals(orderId)).findFirst().orElse(null);
-        if (selectedOrder==null){
+        if (selectedOrder == null) {
             System.out.println("Order was not found");
             return;
         }
-        if (!selectedOrder.getStatus().equals("Pending")){
+        if (!selectedOrder.getStatus().equals("Pending")) {
             System.out.println("Only pending orders can be cancelled! ");
         }
         System.out.println("Are you sure you want to cancel this order? (Yes/No): ");
         String input = Utils.getStringInput();
-        if (input.equalsIgnoreCase("Yes")){
+        if (input.equalsIgnoreCase("Yes")) {
             System.out.println("Completed! your order has been cancelled! ");
-            orderRepo.deleteOrder(orderId,email);
-        }else {
+            try {
+                orderRepo.deleteOrder(orderId, email);
+            } catch (RuntimeException e) {
+                logger.error("Failed to cancel the order{}", orderId);
+                System.out.println("Failed to cancel the order, Please try again.");
+            }
+
+        } else {
             System.out.println("Cancellation aborted! ");
         }
     }
-
-
 
 
     private static Customer addCustomer(String firstName, String lastName, String phone, String email, String city) {

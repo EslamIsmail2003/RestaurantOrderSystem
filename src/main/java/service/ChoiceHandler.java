@@ -37,7 +37,10 @@ public class ChoiceHandler {
         while (true) {
             printStaffMenu();
             int choice = Utils.getNumberInput();
-            if (choice == 5) return;
+            if (choice == 5){
+                System.out.println("Going back...");
+                return;
+        }
             Runnable actions = staffMenuActions.get(choice);
             if (actions != null) {
                 actions.run();
@@ -52,7 +55,10 @@ public class ChoiceHandler {
         while (true) {
             printAdminMenu();
             int choice = Utils.getNumberInput();
-            if (choice == 12) return;
+            if (choice == 12){
+                System.out.println("Going back...");
+                return;
+            }
             Runnable actions = adminMenuActions.get(choice);
             if (actions != null) {
                 actions.run();
@@ -67,7 +73,10 @@ public class ChoiceHandler {
         while (true) {
             printCustomerMenu();
             int choice = Utils.getNumberInput();
-            if (choice == 5) return;
+            if (choice == 5) {
+                System.out.println("Going back...");
+                return;
+            }
             Runnable actions = customerMenuActions.get(choice);
             if (actions != null) {
                 actions.run();
@@ -89,10 +98,8 @@ public class ChoiceHandler {
                 runStaffMenu();
             }
             if (choice == 3) {
+                System.out.println("Going back...");
                 return;
-            } else {
-                logger.error("Invalid input! {}", choice);
-                System.out.println("Invalid input please enter a number between 1 and 3");
             }
         }
     }
