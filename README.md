@@ -16,7 +16,7 @@ control, and business analytics.
 1. Clone the repo:
    git clone https://github.com/EslamIsmail2003/RestaurantOrderSystem
 
-2. Request application.properties from the developer and place it in:
+2. Request application.properties from me and place it in:
    src/main/resources/application.properties
 
 3. Run Main.java
