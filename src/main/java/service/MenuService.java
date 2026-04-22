@@ -3,6 +3,8 @@ package service;
 
 import model.MenuItem;
 import model.Order;
+import model.OrderHeader;
+import model.ReceiptItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import repository.MenuItemRepo;
@@ -49,8 +51,11 @@ public class MenuService {
 
     public void displayCategories() {
         List<String> categories = menuItemRepo.getAllCategories();
+        System.out.println("================================");
+        System.out.println("       CATEGORIES       ");
+        System.out.println("================================");
         for (int i = 0; i < categories.size(); i++) {
-            System.out.println((i + 1) + ". " + categories.get(i));
+            System.out.println((i + 1) + ". " + categories.get(i).substring(0, 1).toUpperCase() + categories.get(i).substring(1).toLowerCase());
         }
     }
 
@@ -68,16 +73,16 @@ public class MenuService {
         }
     }
 
-    public void getOrderByCustomerId(){
+    public void getOrderByCustomerId() {
         System.out.println("Enter the customer's ID: ");
         String customerId = Utils.getStringInput();
         List<Order> orders = orderRepo.getOrderByCustomerId(customerId);
-        if (orders.isEmpty()){
+        if (orders.isEmpty()) {
             logger.warn("No orders were found! {}", customerId);
             System.out.println("There are no orders for this customer id! ");
             return;
         }
-        for (Order order : orders){
+        for (Order order : orders) {
             order.displayOrder();
         }
     }
@@ -91,14 +96,14 @@ public class MenuService {
         }
     }
 
-    public void totalRevenue(){
+    public void totalRevenue() {
         double total_revenue = orderRepo.getTotalRevenue();
         System.out.printf("Total Revenue: $%.2f%n", total_revenue);
     }
 
-    public void topSellingItems(){
+    public void topSellingItems() {
         HashMap<String, Integer> mapList = orderRepo.getTopSellingItems();
-        for (Map.Entry<String,Integer> entry : mapList.entrySet()){
+        for (Map.Entry<String, Integer> entry : mapList.entrySet()) {
             String name = entry.getKey();
             int total_ordered = entry.getValue();
             System.out.printf("%-30s %d orders%n", name, total_ordered);
@@ -106,38 +111,67 @@ public class MenuService {
     }
 
 
-
-
-    public void orderCountByStatus(){
+    public void orderCountByStatus() {
         HashMap<String, Integer> itemMap = orderRepo.getOrderCountByStatus();
-        for (Map.Entry<String,Integer> entry : itemMap.entrySet()){
+        for (Map.Entry<String, Integer> entry : itemMap.entrySet()) {
             String status = entry.getKey();
             int totalCount = entry.getValue();
-            System.out.printf("%-30s %d orders%n",status,totalCount);
+            System.out.printf("%-30s %d orders%n", status, totalCount);
         }
     }
 
 
     public void displayAllOrders() {
         List<Order> orders = orderRepo.getAllOrders();
-        for (Order order : orders) {
-            order.displayOrder();
+        System.out.println("==================================");
+        System.out.println("         ORDER DETAILS            ");
+        System.out.println("==================================");
+        for (int i =0; i<orders.size(); i++){
+            System.out.println((i+1) + ". ");
+            orders.get(i).displayOrder();
         }
     }
 
-    public void updateOrderStatus(){
+    public void updateOrderStatus() {
         System.out.println("Enter order id: ");
         String orderId = Utils.getStringInput();
         List<Order> orders = orderRepo.getOrderByOrderId(orderId);
-        if (orders.isEmpty()){
+        if (orders.isEmpty()) {
             logger.warn("No active orders were found! {}", orderId);
             System.out.println("There are no active orders for this id! ");
             return;
         }
         System.out.println("Set the order status: ");
         String status = Utils.getStringInput();
-        orderRepo.updateOrderByStatus(orderId,status);
+        orderRepo.updateOrderByStatus(orderId, status);
         System.out.println("Order status has updated successfully! ");
+    }
+
+    public void printReceipt() {
+        System.out.println("Enter order ID: ");
+        String orderId = Utils.getStringInput();
+        OrderHeader orderHeader = orderRepo.getOrderHeader(orderId);
+        if (orderHeader == null) {
+            System.out.println("Order not found! ");
+            return;
+        }
+        List<ReceiptItem> receiptItemList = orderRepo.getOrderLineItems(orderId);
+        System.out.println("================================");
+        System.out.println("       RESTAURANT RECEIPT       ");
+        System.out.println("================================");
+        System.out.printf("Customer: %s%n", orderHeader.getCustomerName());
+        System.out.printf("Order ID: %s%n", orderHeader.getOrderId());
+        System.out.printf("Status:   %s%n", orderHeader.getStatus());
+        System.out.println("--------------------------------");
+        for (ReceiptItem items : receiptItemList) {
+            String name = items.getName();
+            int quantity = items.getQuantity();
+            double price = items.getPrice();
+            System.out.printf("%dx %-25s $%.2f%n", quantity, name, price * quantity);
+        }
+        System.out.println("--------------------------------");
+        System.out.printf("TOTAL: $%.2f%n", orderHeader.getTotalAmount());
+        System.out.println("================================");
     }
 
 

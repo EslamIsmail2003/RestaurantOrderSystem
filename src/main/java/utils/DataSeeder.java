@@ -7,6 +7,7 @@ import repository.MenuItemRepo;
 
 import java.io.*;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 public class DataSeeder {
@@ -14,6 +15,11 @@ public class DataSeeder {
     private static final MenuItemRepo menuItemRepo = new MenuItemRepo();
 
     public void seedMenuItems() {
+        List<MenuItem> existing = menuItemRepo.getAllMenuItems();
+        if (!existing.isEmpty()){
+            logger.info("Menu items already added, skipping");
+            return;
+        }
         try {
             InputStream inputStream = DatabaseConnection.class.getClassLoader().getResourceAsStream("menu_items.csv");
             if (inputStream==null){

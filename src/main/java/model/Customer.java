@@ -21,6 +21,11 @@ public class Customer extends BaseEntity {
         this.city = city;
     }
     public void displayCustomer(){
-        System.out.println("First Name: " + getFirstName() + " Last Name: " + getLastName() + " Customer Id: " + getId() +  " Phone: " + getPhone() + " Email: " + getEmail() + " City: " + getCity() + " Created At: " + getCreatedAt());
+            System.out.println("┌─────────────────────────────┐");
+            System.out.printf("│ %-10s %-18s│%n", "Name:", getFirstName() + " " + getLastName());
+            System.out.printf("│ %-10s %-18s│%n", "Email:", getEmail());
+            System.out.printf("│ %-10s %-18s│%n", "Phone:", getPhone());
+            System.out.printf("│ %-10s %-18s│%n", "City:", getCity());
+            System.out.println("└─────────────────────────────┘");
     }
 }

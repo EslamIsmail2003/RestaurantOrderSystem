@@ -99,7 +99,6 @@ public class CustomerService {
         while (true) {
             System.out.println("\n -------- Categories --------");
             menuService.displayCategories();
-
             System.out.println("Enter category number(or 0 to checkout)");
             int categoryChoice = Utils.getNumberInput();
             if (categoryChoice == 0) break;
