@@ -13,6 +13,8 @@ public class ChoiceHandler {
     private final Map<Integer, Runnable> adminMenuActions = new HashMap<>();
     private final Map<Integer, Runnable> staffMenuActions = new HashMap<>();
     private final Map<Integer, Runnable> mainMenuActions = new HashMap<>();
+    private final Map<Integer, Runnable> orderMenuActions = new HashMap<>();
+    private final Map<Integer, Runnable> analyticsActions = new HashMap<>();
 
     public ChoiceHandler() {
         MenuService menuService = new MenuService();
@@ -21,6 +23,8 @@ public class ChoiceHandler {
         initAdminMenu(menuService);
         initStaffMenu(staffService);
         initCustomerMenu(customerService);
+        initOrderMenu(menuService);
+        initAnalyticsMenu(menuService);
         initMainMenu();
     }
 
@@ -51,11 +55,47 @@ public class ChoiceHandler {
         }
     }
 
+    public void runOrderMenu(){
+        while (true){
+            printOrderMenu();
+            int choice = Utils.getNumberInput();
+            if (choice == 5){
+                System.out.println("Going back...");
+                return;
+            }
+            Runnable actions = orderMenuActions.get(choice);
+            if (actions!= null){
+                actions.run();
+            }else {
+                logger.error("Invalid input! {}", choice);
+                System.out.println("Invalid input! Please enter a number between 1 and 5");
+            }
+        }
+    }
+
+    public void runAnalyticsMenu(){
+        while (true){
+            printAnalyticsMenu();
+            int choice = Utils.getNumberInput();
+            if (choice == 5){
+                System.out.println("Going back...");
+                return;
+            }
+            Runnable actions = analyticsActions.get(choice);
+            if (actions != null){
+                actions.run();
+            }else {
+                logger.error("Invalid input! {}", choice);
+                System.out.println("Invalid input! Please enter a number between 1 and 5");
+            }
+        }
+    }
+
     public void runAdminMenu() {
         while (true) {
             printAdminMenu();
             int choice = Utils.getNumberInput();
-            if (choice == 12){
+            if (choice == 5){
                 System.out.println("Going back...");
                 return;
             }
@@ -64,7 +104,7 @@ public class ChoiceHandler {
                 actions.run();
             } else {
                 logger.error("Invalid input! {}", choice);
-                System.out.println("Invalid input! Please enter a number between 1 and 12");
+                System.out.println("Invalid input! Please enter a number between 1 and 5");
             }
         }
     }
@@ -91,15 +131,25 @@ public class ChoiceHandler {
         while (true) {
             printAdminControl();
             int choice = Utils.getNumberInput();
-            if (choice == 1) {
+            if (choice ==1 ){
                 runAdminMenu();
             }
-            if (choice == 2) {
+            else if (choice ==2){
+                runOrderMenu();
+            }
+            else if (choice ==3 ){
+                runAnalyticsMenu();
+            }
+            else if (choice ==4){
                 runStaffMenu();
             }
-            if (choice == 3) {
+            else if (choice ==5){
                 System.out.println("Going back...");
                 return;
+            }
+            else {
+                logger.error("Invalid input! {}", choice);
+                System.out.println("Invalid input");
             }
         }
     }
@@ -133,17 +183,27 @@ public class ChoiceHandler {
     public void initAdminMenu(MenuService menuService) {
         adminMenuActions.put(1, menuService::addNewMenuItem);
         adminMenuActions.put(2, menuService::getAllMenuItems);
-        adminMenuActions.put(3, menuService::displayAllOrders);
-        adminMenuActions.put(4, menuService::getMenuItemByCategory);
-        adminMenuActions.put(5, menuService::displayCategories);
-        adminMenuActions.put(6, menuService::revenueByCategory);
-        adminMenuActions.put(7, menuService::topSellingItems);
-        adminMenuActions.put(8, menuService::getOrderByStatus);
-        adminMenuActions.put(9, menuService::updateOrderStatus);
-        adminMenuActions.put(10,menuService::totalRevenue);
-        adminMenuActions.put(11,menuService::orderCountByStatus);
-        adminMenuActions.put(12, () -> System.out.println("Going back..."));
+        adminMenuActions.put(3, menuService::getMenuItemByCategory);
+        adminMenuActions.put(4, menuService::displayCategories);
+        adminMenuActions.put(5, () -> System.out.println("Going back..."));
     }
+
+    public void initOrderMenu(MenuService menuService){
+        orderMenuActions.put(1, menuService::displayAllOrders);
+        orderMenuActions.put(2, menuService::getOrderByStatus);
+        orderMenuActions.put(3, menuService::updateOrderStatus);
+        orderMenuActions.put(4, menuService::printReceipt);
+        orderMenuActions.put(5, () -> System.out.println("Going back..."));
+    }
+
+    public void initAnalyticsMenu(MenuService menuService){
+        analyticsActions.put(1, menuService::revenueByCategory);
+        analyticsActions.put(2, menuService::topSellingItems);
+        analyticsActions.put(3, menuService::totalRevenue);
+        analyticsActions.put(4,menuService::orderCountByStatus);
+        analyticsActions.put(5, () -> System.out.println("Going back..."));
+    }
+
 
     public void initStaffMenu(StaffService staffService) {
         staffMenuActions.put(1, staffService::addStaff);
@@ -164,22 +224,33 @@ public class ChoiceHandler {
     public void printAdminMenu() {
         System.out.println("1. Add new menu item");
         System.out.println("2. Display all menu items");
-        System.out.println("3. Display all orders");
-        System.out.println("4. Display menu item by category");
-        System.out.println("5. Display categories");
-        System.out.println("6. Display revenue by category");
-        System.out.println("7. Display top selling items");
-        System.out.println("8. Display order by status");
-        System.out.println("9. Update order status");
-        System.out.println("10. Total revenue");
-        System.out.println("11. Order count by status");
-        System.out.println("12. Back");
+        System.out.println("3. Display by category");
+        System.out.println("4. Display all categories");
+        System.out.println("5. Back");
+    }
+
+    public void printOrderMenu(){
+        System.out.println("1. Display all orders");
+        System.out.println("2. Display by status");
+        System.out.println("3. Update order status");
+        System.out.println("4. Order receipt");
+        System.out.println("5. Back");
+    }
+
+    public void printAnalyticsMenu(){
+        System.out.println("1. Revenue by category");
+        System.out.println("2. Top selling items");
+        System.out.println("3. Total revenue");
+        System.out.println("4. Order count by status");
+        System.out.println("5. Back");
     }
 
     public void printAdminControl() {
-        System.out.println("1. Orders and Items");
-        System.out.println("2. Staff control");
-        System.out.println("3. Back");
+        System.out.println("1. Menu Management");
+        System.out.println("2. Order Management");
+        System.out.println("3. Analytics");
+        System.out.println("4. Staff Management");
+        System.out.println("5. Back");
     }
 
     public void printStaffMenu() {
