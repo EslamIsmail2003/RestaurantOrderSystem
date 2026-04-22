@@ -8,8 +8,9 @@ public class Main {
     }
 
     public static void printOptions(){
-        System.out.println("Welcome to the restaurant system! ");
-        System.out.println("Please select from the following options: ");
+        System.out.println("──────────────────────────────────");
+        System.out.print("├Welcome to the restaurant system┤\n");
+        System.out.print("Please select from the following options: \n");
     }
 
     public static void processMainMenu(){

@@ -83,6 +83,8 @@ public class CustomerService {
             String attempt = Utils.getStringInput();
             if (attempt.equalsIgnoreCase("Yes")) {
                 registerCustomer();
+                System.out.println("Registration successful ! Please select 'Place an order' from the menu");
+                return;
             } else {
                 System.out.println("Thanks for using our restaurant! ");
                 System.exit(0);

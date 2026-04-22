@@ -116,18 +116,16 @@ public class MenuService {
         for (Map.Entry<String, Integer> entry : itemMap.entrySet()) {
             String status = entry.getKey();
             int totalCount = entry.getValue();
-            System.out.printf("%-30s %d orders%n", status, totalCount);
+            System.out.printf("%-10s %d orders%n", status, totalCount);
         }
     }
-
-
     public void displayAllOrders() {
         List<Order> orders = orderRepo.getAllOrders();
         System.out.println("==================================");
         System.out.println("         ORDER DETAILS            ");
         System.out.println("==================================");
         for (int i =0; i<orders.size(); i++){
-            System.out.println((i+1) + ". ");
+            System.out.println("Order No."+ " " + (i+1));
             orders.get(i).displayOrder();
         }
     }
