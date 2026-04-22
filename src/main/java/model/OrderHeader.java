@@ -14,7 +14,9 @@ public class OrderHeader {
     private double totalAmount;
 
     public OrderHeader(String customerName, String orderId, Timestamp createdAt, String status, double totalAmount){
-        this.customerName = customerName;
+        String[] parts = customerName.split(" ");
+        String capitalized = parts[0].substring(0,1).toUpperCase() + parts[0].toLowerCase() + " " + parts[1].substring(0,1).toUpperCase() + parts[1].substring(1).toLowerCase();
+        this.customerName = capitalized;
         this.orderId = orderId;
         this.createdAt = createdAt;
         this.status = status;
