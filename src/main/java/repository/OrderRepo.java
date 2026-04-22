@@ -2,14 +2,13 @@ package repository;
 
 import model.Customer;
 import model.Order;
+import model.OrderHeader;
+import model.ReceiptItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.DatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -210,6 +209,50 @@ public class OrderRepo {
         }
         return orders;
     }
+
+    public List<ReceiptItem> getOrderLineItems(String orderId){
+        List<ReceiptItem> receiptItemList = new ArrayList<>();
+        String sql = "SELECT mi.name, oi.quantity, oi.price FROM order_items OI JOIN menu_items MI ON oi.menu_item_id = mi.item_id WHERE oi.order_id = ? ";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1,orderId);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()){
+                String name = resultSet.getString("name");
+                int quantity = resultSet.getInt("quantity");
+                double price = resultSet.getDouble("price");
+                ReceiptItem items = new ReceiptItem(name,quantity,price);
+                receiptItemList.add(items);
+            }
+        } catch (SQLException e) {
+            logger.error("An error has occurred while fetching data from database! ", e);
+            return new ArrayList<>();
+        }
+        return receiptItemList;
+    }
+
+    public OrderHeader getOrderHeader(String orderId){
+        String sql = "SELECT CONCAT(c.first_name, ' ' , c.last_name) AS customer_name, o.order_id, o.created_at, o.status, o.total_amount FROM orders O JOIN customers C ON o.customer_id = c.customer_id WHERE o.order_id = ?";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1,orderId);
+            ResultSet resultSet = stmt.executeQuery();
+            if (resultSet.next()){
+                String customerName = resultSet.getString("customer_name");
+                Timestamp createdAt = resultSet.getTimestamp("created_at");
+                String order_id = resultSet.getString("order_id");
+                String status = resultSet.getString("status");
+                double total_amount = resultSet.getDouble("total_amount");
+                return new OrderHeader(customerName,order_id,createdAt,status,total_amount);
+            }
+        } catch (SQLException e) {
+            logger.error("An error has occurred while fetching data from database! ", e);
+        }
+        return null;
+    }
+
 
     private Order mapRow(ResultSet resultSet)
             throws SQLException {

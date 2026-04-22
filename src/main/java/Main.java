@@ -1,10 +1,12 @@
 import service.ChoiceHandler;
+import service.OrderService;
 import utils.DatabaseConnection;
 
 public class Main {
     public static void main(String[] args){
         DatabaseConnection.getConnection();
-        processMainMenu();
+        OrderService orderService = new OrderService();
+        orderService.printReceipt();
     }
 
     public static void printOptions(){
