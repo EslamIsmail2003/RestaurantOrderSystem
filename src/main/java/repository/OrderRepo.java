@@ -71,9 +71,26 @@ public class OrderRepo {
         return mapList;
     }
 
+    public HashMap<String, Integer> getTopSellingItems(){
+        HashMap<String, Integer> mapList = new LinkedHashMap<>();
+        String sql = "SELECT mi.name, SUM(oi.quantity) AS total_ordered FROM menu_items MI JOIN order_items OI ON mi.item_id = oi.menu_item_id GROUP BY mi.name";
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()){
+                String name = resultSet.getString("name");
+                int total_ordered = resultSet.getInt("total_ordered");
+                mapList.put(name,total_ordered);
+            }
+        } catch (SQLException e) {
+            logger.error("An error has occurred while fetching data from menu_items! ", e);
+            return new HashMap<>();
+        }
+        return mapList;
+    }
 
-
-    public double getTotalRevenue() {
+    public Double getTotalRevenue(){
         String sql = "SELECT SUM(total_amount) AS total_revenue FROM orders WHERE status = 'completed'";
         try {
             Connection connection = DatabaseConnection.getConnection();
@@ -83,7 +100,7 @@ public class OrderRepo {
                 return resultSet.getDouble("total_revenue");
             }
         } catch (SQLException e) {
-            logger.error("An error occurred while fetching total revenue!", e);
+            logger.error("An error has occurred while fetching data from orders! ",e );
         }
         return 0.0;
     }

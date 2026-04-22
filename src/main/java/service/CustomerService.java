@@ -1,9 +1,6 @@
 package service;
 
-import model.Customer;
-import model.MenuItem;
-import model.Order;
-import model.OrderItem;
+import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import repository.CustomerRepo;
@@ -196,6 +193,13 @@ public class CustomerService {
         }
     }
 
+
+    public void displayCustomerOrderSummary(){
+        List<CustomerOrderSummary> summaryList = customerRepo.getCustomerOrderSummary();
+        for (CustomerOrderSummary summary : summaryList){
+            summary.displayCustomerOrderSummary();
+        }
+    }
 
     private static Customer addCustomer(String firstName, String lastName, String phone, String email, String city) {
         String newUUID = UUID.randomUUID().toString();

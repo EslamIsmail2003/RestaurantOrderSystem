@@ -91,20 +91,22 @@ public class MenuService {
         }
     }
 
-
-    public void totalRevenue() {
-        double revenue = orderRepo.getTotalRevenue();
-        System.out.printf("Total Revenue: $%.2f%n", revenue);
+    public void totalRevenue(){
+        double total_revenue = orderRepo.getTotalRevenue();
+        System.out.printf("Total Revenue: $%.2f%n", total_revenue);
     }
 
-    public void topSellingItems() {
-        HashMap<String, Integer> itemMap = menuItemRepo.getTopSellingItems();
-        for (Map.Entry<String, Integer> entry : itemMap.entrySet()) {
+    public void topSellingItems(){
+        HashMap<String, Integer> mapList = orderRepo.getTopSellingItems();
+        for (Map.Entry<String,Integer> entry : mapList.entrySet()){
             String name = entry.getKey();
             int total_ordered = entry.getValue();
             System.out.printf("%-30s %d orders%n", name, total_ordered);
         }
     }
+
+
+
 
     public void orderCountByStatus(){
         HashMap<String, Integer> itemMap = orderRepo.getOrderCountByStatus();
